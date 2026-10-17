@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>吃了多少</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="吃了多少">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="icon" href="./icon-192.png">
+<style>
+:root {
+  --bg: #0f1115;
+  --surface: #191d24;
+  --surface2: #232a33;
+  --line: #2c343f;
+  --text: #eef1f6;
+  --dim: #8b94a3;
+  --accent: #34d399;
+  --danger: #f87171;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html { overscroll-behavior-y: contain; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.4 -apple-system, "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+button, input { font: inherit; color: inherit; }
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* ── header ─────────────────────────────── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: calc(8px + env(safe-area-inset-top)) 16px 8px;
+}
+.ghost {
+  background: none;
+  border: 0;
+  color: var(--dim);
+  padding: 8px 4px;
+  font-size: 15px;
+}
+.ghost:active { color: var(--text); }
+#storeName { color: var(--text); font-weight: 600; }
+
+/* ── summary ────────────────────────────── */
+#summary {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 16px 14px;
+}
+.cap { color: var(--dim); font-size: 13px; }
+#totalValue {
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin: 2px 0 6px;
+}
+#breakdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.pill {
+  background: var(--surface2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--dim);
+}
+.pill.on { color: var(--accent); border-color: #1e4d3d; }
+
+/* ── 價位層級 ───────────────────────────── */
+#tiers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 16px 0;
+}
+.tier {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px;
+  background: var(--surface);
+  border-radius: 14px;
+  overflow: hidden;
+  border-left: 8px solid transparent;
+}
+.plus {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "price count" "lab sub";
+  align-items: baseline;
+  gap: 1px 6px;
+  background: none;
+  border: 0;
+  text-align: left;
+  padding: 12px 12px 12px 10px;
+  min-height: 76px;
+}
+.plus:active { background: var(--surface2); }
+.price { grid-area: price; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.count { grid-area: count; font-size: 19px; font-weight: 600; color: var(--dim); font-variant-numeric: tabular-nums; }
+.lab { grid-area: lab; font-size: 12px; color: var(--dim); }
+.sub { grid-area: sub; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.tier.on .count { color: var(--text); }
+.tier.on .sub { color: var(--text); }
+.tier.on { background: var(--surface2); }
+.minus {
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 26px;
+  line-height: 1;
+}
+.minus:active { background: var(--surface2); color: var(--text); }
+
+/* ── 其他項目 ───────────────────────────── */
+#extrasSec { padding: 14px 16px 0; }
+#extras { display: grid; gap: 8px; margin-bottom: 8px; }
+.extra {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "lab amt" "meta amt";
+  gap: 1px 10px;
+  align-items: center;
+  text-align: left;
+  background: var(--surface);
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.extra:active { background: var(--surface2); }
+/* 用父層框住，避免跟其他模板的同名 class 撞車 */
+.extra .elab { grid-area: lab; font-weight: 600; }
+.extra .emeta { grid-area: meta; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.extra .eamt { grid-area: amt; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.add {
+  width: 100%;
+  background: none;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--dim);
+  padding: 14px;
+}
+.add:active { color: var(--text); border-color: var(--dim); }
+
+/* ── dialog ─────────────────────────────── */
+dialog {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 0;
+  width: min(100% - 20px, 440px);
+  max-height: calc(100dvh - 40px);
+}
+dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+.dlg { padding: 18px; display: grid; gap: 14px; }
+.dlg-inner { display: grid; gap: 14px; }
+.dlg h2 { margin: 0; font-size: 17px; }
+.dlg .hint { color: var(--dim); font-size: 12px; font-weight: 400; }
+.field { display: grid; gap: 6px; font-size: 13px; color: var(--dim); }
+.field input[type="text"], .field input[type="number"] {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 16px;
+  width: 100%;
+}
+.field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
+.row input[type="number"] { width: 76px; text-align: right; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; font-size: 16px; }
+input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); }
+input[type="color"] { width: 34px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+input[type="color"]:disabled { opacity: 0.25; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 14px;
+}
+.chip.on { border-color: var(--accent); color: var(--accent); }
+.editrow { display: grid; grid-template-columns: auto auto minmax(0, 1fr) 66px 30px; gap: 6px; align-items: center; margin-bottom: 6px; }
+.editrow input[type="text"], .editrow input[type="number"] {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 9px; font-size: 15px; width: 100%; min-width: 0;
+}
+.r-del { background: none; border: 0; color: var(--dim); font-size: 20px; line-height: 1; padding: 4px; }
+.r-del:active { color: var(--danger); }
+menu { display: flex; gap: 8px; justify-content: flex-end; margin: 0; padding: 0; }
+menu button {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-size: 15px;
+}
+menu button.primary { background: var(--accent); border-color: var(--accent); color: #06231a; font-weight: 600; }
+menu button.danger { color: var(--danger); }
+menu button.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <button id="storeBtn" class="ghost"><span id="storeName"></span> ▾</button>
+  <button id="resetBtn" class="ghost">重置</button>
+</header>
+
+<section id="summary">
+  <div class="cap">總計</div>
+  <div id="totalValue">$0</div>
+  <div id="breakdown">
+    <span>小計 <b id="subValue">$0</b></span>
+    <button id="svcBtn" class="pill"></button>
+  </div>
+</section>
+
+<main id="tiers"></main>
+
+<section id="extrasSec">
+  <div id="extras"></div>
+  <button id="addExtraBtn" class="add">＋ 其他項目（拉麵 / 甜點 / 飲料）</button>
+</section>
+
+<dialog id="settingsDlg">
+  <div class="dlg">
+    <h2>店家設定</h2>
+
+    <div class="field">套用預設店家 <span class="hint">會清空這一餐的數量</span></div>
+    <div id="presetChips" class="chips"></div>
+
+    <label class="row">顯示顏色 <input type="checkbox" id="showColors"></label>
+    <label class="row">服務費 <span><input type="number" id="svcPct" inputmode="numeric" min="0" max="99" step="1"> %</span></label>
+
+    <div class="field">價位層級</div>
+    <div id="tierEditor"></div>
+    <button type="button" id="addTierBtn" class="add">＋ 新增層級</button>
+
+    <menu><button type="button" id="settingsDone" class="primary">完成</button></menu>
+  </div>
+</dialog>
+
+<dialog id="extraDlg">
+  <div class="dlg">
+    <h2 id="extraTitle">其他項目</h2>
+    <form id="extraForm" class="dlg-inner">
+      <label class="field">名稱 <input type="text" id="exLabel" placeholder="拉麵 / 甜點 / 飲料"></label>
+      <label class="field">單價 <input type="number" id="exPrice" inputmode="decimal" min="1" step="1" placeholder="120" required></label>
+      <label class="field">數量 <input type="number" id="exQty" inputmode="numeric" min="1" step="1" value="1" required></label>
+    </form>
+    <menu>
+      <button type="button" id="exDelete" class="danger hidden">刪除</button>
+      <button type="button" id="exCancel">取消</button>
+      <button type="button" id="exOk" class="primary">加入</button>
+    </menu>
+  </div>
+</dialog>
+
+<template id="tierTpl">
+  <div class="tier">
+    <button class="plus">
+      <span class="price"></span>
+      <span class="count"></span>
+      <span class="lab"></span>
+      <span class="sub"></span>
+    </button>
+    <button class="minus" aria-label="減一盤">−</button>
+  </div>
+</template>
+
+<template id="extraTpl">
+  <button class="extra">
+    <span class="elab"></span>
+    <span class="emeta"></span>
+    <span class="eamt"></span>
+  </button>
+</template>
+
+<template id="tierEditTpl">
+  <div class="editrow">
+    <input type="checkbox" class="r-has" title="這個層級是否顯示顏色">
+    <input type="color" class="r-color">
+    <input type="text" class="r-name" placeholder="名稱">
+    <input type="number" class="r-price" inputmode="numeric" min="0" step="1">
+    <button type="button" class="r-del" title="刪除層級">×</button>
+  </div>
+</template>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
