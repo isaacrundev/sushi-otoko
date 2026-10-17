@@ -25,7 +25,7 @@ export const PRESETS = [
     // 均一價：單純用盤數算，所以只有一層。甜點等雜項走「其他項目」。
     serviceChargePct: 10,
     showColors: false,
-    tiers: [{ price: 20, label: '', color: null }],
+    tiers: [{ price: 20, label: '壽司盤', color: null }],
   },
   {
     id: 'sushiexpress',
