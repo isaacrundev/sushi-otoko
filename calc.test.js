@@ -69,11 +69,13 @@ test('makeState 從空白開始', () => {
   expect(s.tiers.length).toBe(7)
   expect(s.tiers.every((t) => t.count === 0)).toBe(true)
   expect(s.extras).toEqual([])
+  expect(s.serviceOn).toBe(false) // 服務費預設關，費率有帶入但不算錢
+  expect(s.serviceChargePct).toBe(10) // 壽司郎的費率還在
   expect(s.storeName).toBe('壽司郎')
 })
 
 test('clearMeal 歸零但保留店家設定', () => {
-  const s = makeState(PRESETS[4])
+  const s = makeState(PRESETS[3]) // 自訂
   s.tiers[0].count = 5
   s.extras.push({ label: '甜點', unitPrice: 90, qty: 2 })
   const cleared = clearMeal(s)

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>吃了多少</title>
+<title>壽司男</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#0f1115">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="吃了多少">
+<meta name="apple-mobile-web-app-title" content="壽司男">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <link rel="icon" href="./icon-192.png">
 <style>
@@ -262,9 +262,9 @@ menu button.hidden { display: none; }
     <label class="row">顯示顏色 <input type="checkbox" id="showColors"></label>
     <label class="row">服務費 <span><input type="number" id="svcPct" inputmode="numeric" min="0" max="99" step="1"> %</span></label>
 
-    <div class="field">價位層級</div>
+    <div class="field">單價項目</div>
     <div id="tierEditor"></div>
-    <button type="button" id="addTierBtn" class="add">＋ 新增層級</button>
+    <button type="button" id="addTierBtn" class="add">＋ 新增單價項目</button>
 
     <menu><button type="button" id="settingsDone" class="primary">完成</button></menu>
   </div>
@@ -308,11 +308,11 @@ menu button.hidden { display: none; }
 
 <template id="tierEditTpl">
   <div class="editrow">
-    <input type="checkbox" class="r-has" title="這個層級是否顯示顏色">
+    <input type="checkbox" class="r-has" title="這個單價項目是否顯示顏色">
     <input type="color" class="r-color">
     <input type="text" class="r-name" placeholder="名稱">
     <input type="number" class="r-price" inputmode="numeric" min="0" step="1">
-    <button type="button" class="r-del" title="刪除層級">×</button>
+    <button type="button" class="r-del" title="刪除單價項目">×</button>
   </div>
 </template>
 

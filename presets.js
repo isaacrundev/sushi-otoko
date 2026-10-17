@@ -49,13 +49,6 @@ export const PRESETS = [
     ],
   },
   {
-    id: 'uniform',
-    name: '均一價／串串',
-    serviceChargePct: 0,
-    showColors: false,
-    tiers: [{ price: 40, label: '', color: null }],
-  },
-  {
     id: 'custom',
     name: '自訂',
     serviceChargePct: 0,
@@ -74,7 +67,9 @@ export function makeState(preset) {
     storeName: preset.name,
     showColors: preset.showColors,
     serviceChargePct: preset.serviceChargePct,
-    serviceOn: preset.serviceChargePct > 0,
+    // 費率照店家預設帶入，但開關一律預設「關」。由使用者自己決定要不要算，
+    // 不要還沒問就先幫他加一筆。
+    serviceOn: false,
     tiers: preset.tiers.map((t) => ({ ...t, id: uid(), count: 0 })),
     extras: [],
   }

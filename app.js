@@ -44,8 +44,14 @@ function renderTotals() {
   $('#subValue').textContent = formatMoney(t.subtotal)
 
   const pill = $('#svcBtn')
-  const on = state.serviceOn && state.serviceChargePct > 0
-  pill.textContent = on ? `服務費 ${state.serviceChargePct}% +${formatMoney(t.service)}` : '服務費 關閉'
+  const pct = state.serviceChargePct
+  const on = state.serviceOn && pct > 0
+  // 關掉時也要顯示費率，否則「預設關」等於使用者根本看不到這家店有服務費。
+  pill.textContent = on
+    ? `服務費 ${pct}% +${formatMoney(t.service)}`
+    : pct > 0
+      ? `服務費 ${pct}% 關閉`
+      : '不收服務費'
   pill.classList.toggle('on', on)
 }
 
@@ -105,6 +111,7 @@ $('#tiers').addEventListener('click', (e) => {
 })
 
 $('#svcBtn').addEventListener('click', () => {
+  if (state.serviceChargePct <= 0) return // 沒費率就沒東西可切
   state.serviceOn = !state.serviceOn
   renderTotals()
   save()
@@ -234,7 +241,7 @@ function paintTierEditor() {
     })
     row.querySelector('.r-del').addEventListener('click', () => {
       if (state.tiers.length <= 1) {
-        alert('至少要保留一個層級')
+        alert('至少要保留一個單價項目')
         return
       }
       state.tiers = state.tiers.filter((t) => t !== tier)
