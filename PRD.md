@@ -3,8 +3,10 @@
 > **本文件是這個專案的唯一事實來源。** 施工後、決策改變時、範圍變動時，必須回來更新本文件。
 > 更新規則見文末。
 
-**狀態**：規格已鎖定，尚未開始實作
+**狀態**：v1 已上線
 **最後更新**：2026-10-17
+**線上**：https://isaacrundev.github.io/sushi-otoko/
+**原始碼**：https://github.com/isaacrundev/sushi-otoko
 
 ---
 
@@ -181,6 +183,10 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 
 **部署**：靜態檔案丟 Cloudflare Pages 或 GitHub Pages。零後端、零維運。
 
+**部署現況（2026-10-17）**：GitHub Pages，`main` 分支根目錄，legacy build。改版只要 `git push`，Pages 自動重建。
+
+⚠️ **所有資源路徑必須維持相對路徑**（`./app.js`、`manifest` 的 `start_url: "./"` / `scope: "./"`）。專案站台架在 `/<repo>/` 子路徑下，改成 `/app.js` 這種絕對路徑會直接 404。
+
 **必須處理的三件事**：
 
 1. **Service worker 用 stale-while-revalidate，不是 cache-first。** 先回快取（秒開），背景同時抓新版；離線照樣可用。
@@ -254,8 +260,9 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 | 單元測試 | 11 條通過（`bun test`，77 個斷言） |
 | 畫面驗證 | 390×844 已用 headless Chrome 實測：空的一餐、吃到一半、點一盤、店家設定對話框、其他項目對話框；無水平溢出 |
 | 金額驗證 | seed 一餐 → 小計 $920 + 服務費 $92 = **總計 $1,012**；點一盤 40 元 → $960 + $96 = **$1,056** |
-| 部署 | 未部署 |
-| 真機驗證 | **未做**（iOS/Android 加到主畫面、離線、safe-area） |
+| 部署 | **已上線** GitHub Pages：https://isaacrundev.github.io/sushi-otoko/ |
+| 線上驗證 | 已用真實 Chrome 對線上版實測：service worker 註冊在正確子路徑、點一盤 → $40 + $4 = **$44**、重載後狀態保留、**離線重載仍可完整運作**、console 無錯誤 |
+| 真機驗證 | **未做**（iOS/Android 加到主畫面、safe-area） |
 
 ### 決策紀錄
 
@@ -266,6 +273,7 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 - `2026-10-17` — 資料模型加上 `serviceOn`。原本想只用 `serviceChargePct: 0` 表示不收，但那樣「暫時關掉服務費」會把費率忘掉。
 - `2026-10-17` — 新增「均一價／串串」預設（單層、無顏色）。均一價是使用者最早提到的場景，給一顆現成的比叫他自己刪層級合理。
 - `2026-10-17` — 層級按鈕的價錢加上 `$` 前綴（原設計是純數字），跟畫面上其他金額一致。
+- `2026-10-17` — 部署到 GitHub Pages（專案站台，架在 `/<repo>/` 子路徑）。**所有資源路徑必須維持相對路徑**，見 §8。
 
 ---
 
