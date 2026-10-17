@@ -184,7 +184,7 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 
 **部署**：靜態檔案丟 Cloudflare Pages 或 GitHub Pages。零後端、零維運。
 
-**部署現況（2026-10-17）**：GitHub Pages，`main` 分支根目錄，legacy build。改版只要 `git push`，Pages 自動重建。
+**部署現況（2026-10-17）**：GitHub Pages，**改用 GitHub Actions 部署**（`.github/workflows/deploy.yml`）。PR 跑 `bun test`，push 到 `main` 才部署；測試紅燈就不會有部署那一步。上傳的 artifact 只含上線檔案（`PRD.md`、`AGENTS.md`、`tools/`、`*.test.js` 不公開）。建置若只加檔案，不用動 workflow（rsync 是排除式）。操作步驟見 `AGENTS.md`。
 
 ⚠️ **所有資源路徑必須維持相對路徑**（`./app.js`、`manifest` 的 `start_url: "./"` / `scope: "./"`）。專案站台架在 `/<repo>/` 子路徑下，改成 `/app.js` 這種絕對路徑會直接 404。
 
@@ -262,7 +262,7 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 | 單元測試 | 11 條通過（`bun test`，77 個斷言） |
 | 畫面驗證 | 390×844 已用 headless Chrome 實測：空的一餐、吃到一半、點一盤、店家設定對話框、其他項目對話框；其他項目 +1／−1、1 再減的刪除確認（取消與確認都驗過）、✎ 改價後數量保留；無水平溢出 |
 | 金額驗證 | seed 一餐 → 小計 $920 + 服務費 $92 = **總計 $1,012**；點一盤 40 元 → $960 + $96 = **$1,056** |
-| 部署 | **已上線** GitHub Pages：https://isaacrundev.github.io/sushi-otoko/ |
+| 部署 | **已上線** GitHub Pages：https://isaacrundev.github.io/sushi-otoko/ （Actions 部署，測試紅燈不部署） |
 | 線上驗證 | 已用真實 Chrome 對線上版實測：service worker 註冊在正確子路徑、點一盤 → $40 + $4 = **$44**、重載後狀態保留、**離線重載仍可完整運作**、console 無錯誤 |
 | 真機驗證 | **未做**（iOS/Android 加到主畫面、safe-area） |
 
@@ -281,6 +281,7 @@ tools/make-icons.py      # 產圖示，開發用，不部署
 - `2026-10-17` — 藏壽司預設改為**均一價 20 元一盤**（原：7 段 30～100）。該店單純用盤數計價，段數用不到；甜點等雜項照現行做法走「其他項目」，不建菜單。單層無顏色可比 → `showColors` 關閉（同 §9-8 的均一價邏輯）。服務費費率維持 10%。
 - `2026-10-17` — 部署到 GitHub Pages（專案站台，架在 `/<repo>/` 子路徑）。**所有資源路徑必須維持相對路徑**，見 §8。
 - `2026-10-17` — 「其他項目」拿掉數量欄位，卡片改成跟價位層級同一套操作（tap +1／右側 − 減一，1 再減先問要不要刪除）。原設計：卡片點一下開編輯對話框，數量在對話框裡填。理由：使用者會特地新增這個項目，數量一定是 1；每多吃一份就回對話框改數字太囉唆。編輯名稱／單價移到卡片右側的 ✎，功能不消失。
+- `2026-10-17` — 部署：**Pages legacy（`main` 分支根目錄）→ GitHub Actions**。理由不是速度，是「`bun test` 要全過」原本只是一句寫在文件裡的自律規則，legacy 是 push 到 `main` 就直接上線，沒人擋。改成 Actions 之後測試跟部署在同一條 workflow，紅燈就沒有部署那一步。順帶好處：`PRD.md`、測試檔、`tools/` 不再被公開（原本 `/PRD.md` 線上回 200）。代價是多一份 workflow 要維護，以及 Pages 的 source 設定要改（已用 API 設為 `build_type: workflow`）。
 
 ---
 
