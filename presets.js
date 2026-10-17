@@ -22,18 +22,10 @@ export const PRESETS = [
   {
     id: 'kura',
     name: '藏壽司',
-    // 30~90 全部是白色圓盤，顏色無法辨識價格，所以只有 100 的黑色長盤有顏色。
+    // 均一價：單純用盤數算，所以只有一層。甜點等雜項走「其他項目」。
     serviceChargePct: 10,
-    showColors: true,
-    tiers: [
-      { price: 30, label: '', color: null },
-      { price: 40, label: '', color: null },
-      { price: 50, label: '', color: null },
-      { price: 60, label: '', color: null },
-      { price: 80, label: '', color: null },
-      { price: 90, label: '', color: null },
-      { price: 100, label: '黑長盤', color: '#5a5f68' },
-    ],
+    showColors: false,
+    tiers: [{ price: 20, label: '', color: null }],
   },
   {
     id: 'sushiexpress',
