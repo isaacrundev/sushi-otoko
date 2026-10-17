@@ -83,12 +83,12 @@ function renderExtras() {
   const wrap = $('#extras')
   wrap.textContent = ''
   for (const e of state.extras) {
-    const row = $('#extraTpl').content.firstElementChild.cloneNode(true)
-    row.querySelector('.elab').textContent = e.label || '項目'
-    row.querySelector('.emeta').textContent = `${formatMoney(e.unitPrice)} × ${e.qty}`
-    row.querySelector('.eamt').textContent = formatMoney(e.unitPrice * e.qty)
-    row.addEventListener('click', () => openExtra(e.id))
-    wrap.append(row)
+    const card = $('#extraTpl').content.firstElementChild.cloneNode(true)
+    card.dataset.id = e.id
+    card.querySelector('.elab').textContent = e.label || '項目'
+    card.querySelector('.emeta').textContent = `${formatMoney(e.unitPrice)} × ${e.qty}`
+    card.querySelector('.eamt').textContent = formatMoney(e.unitPrice * e.qty)
+    wrap.append(card)
   }
 }
 
@@ -126,13 +126,35 @@ $('#resetBtn').addEventListener('click', () => {
 
 /* ── 其他項目 ───────────────────────────── */
 
+$('#extras').addEventListener('click', (e) => {
+  const card = e.target.closest('.extra')
+  if (!card) return
+  if (e.target.closest('.e-minus')) bumpExtra(card.dataset.id, -1)
+  else if (e.target.closest('.e-edit')) openExtra(card.dataset.id)
+  else if (e.target.closest('.eplus')) bumpExtra(card.dataset.id, 1)
+})
+
+function bumpExtra(id, delta) {
+  const e = state.extras.find((x) => x.id === id)
+  if (!e) return
+  // 1 再減就是要刪掉，先問一聲
+  if (delta < 0 && e.qty <= 1) {
+    if (!confirm(`刪除「${e.label || '項目'}」？`)) return
+    state.extras = state.extras.filter((x) => x !== e)
+  } else {
+    e.qty += delta
+  }
+  renderExtras()
+  renderTotals()
+  save()
+}
+
 function openExtra(id = null) {
   editingExtra = id
   const e = id ? state.extras.find((x) => x.id === id) : null
   $('#extraTitle').textContent = e ? '編輯項目' : '其他項目'
   $('#exLabel').value = e?.label ?? ''
   $('#exPrice').value = e?.unitPrice ?? ''
-  $('#exQty').value = e?.qty ?? 1
   $('#exDelete').classList.toggle('hidden', !e)
   $('#exOk').textContent = e ? '儲存' : '加入'
   $('#extraDlg').showModal()
@@ -146,13 +168,12 @@ $('#exOk').addEventListener('click', () => {
   if (!$('#extraForm').reportValidity()) return
   const label = $('#exLabel').value.trim()
   const unitPrice = Math.round(Number(priceEl.value))
-  const qty = Math.max(1, Math.round(Number($('#exQty').value)))
 
   if (editingExtra) {
     const e = state.extras.find((x) => x.id === editingExtra)
-    Object.assign(e, { label, unitPrice, qty })
+    Object.assign(e, { label, unitPrice }) // 數量只由卡片上的 +/− 調整
   } else {
-    state.extras.push({ id: uid(), label, unitPrice, qty })
+    state.extras.push({ id: uid(), label, unitPrice, qty: 1 })
   }
   $('#extraDlg').close()
   renderExtras()

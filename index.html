@@ -145,21 +145,32 @@ header {
 #extras { display: grid; gap: 8px; margin-bottom: 8px; }
 .extra {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 56px;
+  background: var(--surface);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.eplus {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas: "lab amt" "meta amt";
   gap: 1px 10px;
   align-items: center;
   text-align: left;
-  background: var(--surface);
+  background: none;
   border: 0;
-  border-radius: 14px;
   padding: 12px 14px;
+  min-height: 64px;
 }
-.extra:active { background: var(--surface2); }
+.eplus:active { background: var(--surface2); }
 /* 用父層框住，避免跟其他模板的同名 class 撞車 */
 .extra .elab { grid-area: lab; font-weight: 600; }
 .extra .emeta { grid-area: meta; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
 .extra .eamt { grid-area: amt; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.e-edit, .e-minus { background: none; border: 0; border-left: 1px solid var(--line); color: var(--dim); }
+.e-edit { font-size: 17px; }
+.e-minus { font-size: 26px; line-height: 1; }
+.e-edit:active, .e-minus:active { background: var(--surface2); color: var(--text); }
 .add {
   width: 100%;
   background: none;
@@ -276,7 +287,6 @@ menu button.hidden { display: none; }
     <form id="extraForm" class="dlg-inner">
       <label class="field">名稱 <input type="text" id="exLabel" placeholder="拉麵 / 甜點 / 飲料"></label>
       <label class="field">單價 <input type="number" id="exPrice" inputmode="decimal" min="1" step="1" placeholder="120" required></label>
-      <label class="field">數量 <input type="number" id="exQty" inputmode="numeric" min="1" step="1" value="1" required></label>
     </form>
     <menu>
       <button type="button" id="exDelete" class="danger hidden">刪除</button>
@@ -299,11 +309,15 @@ menu button.hidden { display: none; }
 </template>
 
 <template id="extraTpl">
-  <button class="extra">
-    <span class="elab"></span>
-    <span class="emeta"></span>
-    <span class="eamt"></span>
-  </button>
+  <div class="extra">
+    <button class="eplus">
+      <span class="elab"></span>
+      <span class="emeta"></span>
+      <span class="eamt"></span>
+    </button>
+    <button class="e-edit" aria-label="編輯項目">✎</button>
+    <button class="e-minus" aria-label="減一">−</button>
+  </div>
 </template>
 
 <template id="tierEditTpl">
