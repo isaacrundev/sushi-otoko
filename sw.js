@@ -3,7 +3,7 @@
 // 這裡刻意不用 cache-first。價格資料（presets.js）會變，cache-first 會讓已經安裝的
 // 使用者永遠拿到舊價位，而且要等使用者在線上重新載入兩次才會更新完畢。
 // 離線時照樣從快取回應（餐廳訊號差是常態）。
-const CACHE = 'sushi-otoko-v3' // 改版要往上加，見 PRD §8
+const CACHE = 'sushi-otoko-v4' // 改版要往上加，見 PRD §8
 const FILES = [
   './',
   './index.html',
